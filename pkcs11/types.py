@@ -188,7 +188,7 @@ class Token:
         """Label of this token (:class:`str`)."""
         self.serial = serialNumber.rstrip()
         """Serial number of this token (:class:`bytes`)."""
-        self.manufacturer_id = _CK_UTF8CHAR_to_str(manufacturerID)
+        self.manufacturer_id = manufacturerID
         """Manufacturer ID."""
         self.model = _CK_UTF8CHAR_to_str(model)
         """Model name."""
