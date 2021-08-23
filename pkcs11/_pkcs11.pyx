@@ -428,6 +428,36 @@ class Session(types.Session):
 
         return False
 
+    def change_pin(self, old_pin, new_pin):
+        cdef CK_OBJECT_HANDLE handle = self._handle
+        cdef CK_UTF8CHAR *old_pin_data
+        cdef CK_UTF8CHAR *new_pin_data
+        cdef CK_ULONG old_pin_length
+        cdef CK_ULONG new_pin_length
+
+        if old_pin is None:
+            raise ArgumentsBad("Set `old_pin`")
+        if new_pin is None:
+            raise ArgumentsBad("Set `new_pin`")
+
+        if not isinstance(old_pin, bytes):
+            old_pin = old_pin.encode('utf-8')
+        if not isinstance(new_pin, bytes):
+            new_pin = new_pin.encode('utf-8')
+
+        if old_pin and new_pin:
+            old_pin_data = old_pin
+            old_pin_length = len(old_pin)
+            new_pin_data = new_pin
+            new_pin_length = len(new_pin)
+
+            with nogil:
+                assertRV(_funclist.C_SetPIN(handle, old_pin_data, old_pin_length, new_pin_data, new_pin_length))
+
+            return True
+
+        return False
+
     def close(self):
         cdef CK_OBJECT_HANDLE handle = self._handle
 
