@@ -262,13 +262,15 @@ class Token(types.Token):
         if token_label is None or so_pin is None:
             raise ArgumentsBad("Set both `token_label` and `so_pin`")
 
-        pin = so_pin.encode('utf-8')
-        tlabel = token_label.encode('utf-8')
+        if not isinstance(so_pin, bytes):
+            so_pin = so_pin.encode('utf-8')
+        if not isinstance(token_label, bytes):
+            token_label = token_label.encode('utf-8')
 
-        if pin and tlabel:
-            pin_data = pin
-            pin_length = len(pin)
-            label = tlabel
+        if so_pin and token_label:
+            pin_data = so_pin
+            pin_length = len(so_pin)
+            label = token_label
 
             with nogil:
                 assertRV(_funclist.C_InitToken(slot_id, pin_data, pin_length,
@@ -298,10 +300,16 @@ class Token(types.Token):
             pin = None
             user_type = CKU_SO
         elif user_pin is not None:
-            pin = user_pin.encode('utf-8')
+            if not isinstance(user_pin, bytes):
+                pin = user_pin.encode('utf-8')
+            else:
+                pin = user_pin
             user_type = CKU_USER
         elif so_pin is not None:
-            pin = so_pin.encode('utf-8')
+            if not isinstance(so_pin, bytes):
+                pin = so_pin.encode('utf-8')
+            else:
+                pin = so_pin
             user_type = CKU_SO
         else:
             pin = None
@@ -406,11 +414,12 @@ class Session(types.Session):
         if user_pin is None:
             raise ArgumentsBad("Set `user_pin`")
 
-        pin = user_pin.encode('utf-8')
+        if not isinstance(user_pin, bytes):
+            user_pin = user_pin.encode('utf-8')
 
-        if pin:
-            pin_data = pin
-            pin_length = len(pin)
+        if user_pin:
+            pin_data = user_pin
+            pin_length = len(user_pin)
 
             with nogil:
                 assertRV(_funclist.C_InitPIN(handle, pin_data, pin_length))
